@@ -1,0 +1,3 @@
+[submodule "contracts/lib/randomness-solidity"]
+	path = contracts/lib/randomness-solidity
+	url = https://github.com/randa-mu/randomness-solidity
