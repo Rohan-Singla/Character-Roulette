@@ -13,7 +13,7 @@ Foundry consists of:
 
 https://book.getfoundry.sh/
 
-### Deploy contract address
+### Deployed contract address on Base Sepolia
 
 ```shell
 0x7E00F52E56c4f2ad246b481e4eA67899CA48CE2F

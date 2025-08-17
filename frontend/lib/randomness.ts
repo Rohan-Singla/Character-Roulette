@@ -1,10 +1,9 @@
 import { Randomness } from "randomness-js";
-import { JsonRpcProvider, Wallet } from "ethers";
+import { JsonRpcProvider } from "ethers";
 
 const rpc = new JsonRpcProvider(process.env.NEXT_PUBLIC_RPC_URL);
-const wallet = new Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY!, rpc);
 
-const randomness = Randomness.createBaseSepolia(wallet);
+const randomness = Randomness.createBaseSepolia(rpc);
 
 export async function requestRandomness() {
   const response = await randomness.requestRandomness();
@@ -13,4 +12,9 @@ export async function requestRandomness() {
 
 export async function verifyRandomness(response: any) {
   return randomness.verify(response, { shouldBlowUp: false });
+}
+
+export async function calculateRequestPriceNative(callbackGasLimit: any) {
+  const [requestCallBackPrice] = await randomness.calculateRequestPriceNative(BigInt(callbackGasLimit))
+  return requestCallBackPrice
 }

@@ -5,7 +5,6 @@ import {RandomnessReceiverBase} from "randomness-solidity/RandomnessReceiverBase
 
 contract CharacterRoulette is RandomnessReceiverBase {
     mapping(address => string[]) public playerCharacters;
-
     mapping(uint256 => address) public requestToPlayer;
 
     string[] internal characters = [
@@ -17,6 +16,11 @@ contract CharacterRoulette is RandomnessReceiverBase {
         "Necromancer"
     ];
 
+    mapping(address => uint256) public playerCharacterCount;
+
+    event CharacterRequested(address indexed player, uint256 requestId, uint256 requestPrice);
+    event CharacterGenerated(address indexed player, string character, uint256 requestId);
+
     constructor(address randomnessSender, address owner)
         RandomnessReceiverBase(randomnessSender, owner)
     {}
@@ -26,7 +30,11 @@ contract CharacterRoulette is RandomnessReceiverBase {
         uint32 callbackGasLimit
     ) external payable returns (uint256 requestId, uint256 requestPrice) {
         (requestId, requestPrice) = _requestRandomnessPayInNative(callbackGasLimit);
+        require(msg.value >= requestPrice, "Insufficient ETH sent");
+
         requestToPlayer[requestId] = player;
+
+        emit CharacterRequested(player, requestId, requestPrice);
     }
 
     function requestCharacterWithSubscription(
@@ -35,6 +43,8 @@ contract CharacterRoulette is RandomnessReceiverBase {
     ) external returns (uint256 requestId) {
         requestId = _requestRandomnessWithSubscription(callbackGasLimit);
         requestToPlayer[requestId] = player;
+
+        emit CharacterRequested(player, requestId, 0);
     }
 
     function onRandomnessReceived(uint256 requestId, bytes32 randomness)
@@ -48,9 +58,18 @@ contract CharacterRoulette is RandomnessReceiverBase {
         string memory newCharacter = characters[randIndex];
 
         playerCharacters[player].push(newCharacter);
+        playerCharacterCount[player]++;
+
+        emit CharacterGenerated(player, newCharacter, requestId);
+
+        delete requestToPlayer[requestId];
     }
 
     function getCharacters(address player) external view returns (string[] memory) {
         return playerCharacters[player];
+    }
+
+    function getCharacterCount(address player) external view returns (uint256) {
+        return playerCharacterCount[player];
     }
 }

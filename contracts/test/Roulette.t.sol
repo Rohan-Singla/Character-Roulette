@@ -3,34 +3,31 @@ pragma solidity ^0.8.20;
 
 import "forge-std/Test.sol";
 import "../src/CharacterRoulette.sol";
-import "./mocks/CharacterRouletteTestable.sol";
+import "./wrapper.sol";
 
 contract CharacterRouletteTest is Test {
-    CharacterRouletteTestable roulette;
-    address owner = address(0xBEEF);
-    address randomnessSender = address(0xCAFE); 
-    address player = address(0xABCD);
+    CharacterRouletteTestWrapper roulette;
+    address owner = address(1);
+    address player = address(2);
+    address randomnessSender = address(3);
 
     function setUp() public {
-        vm.deal(player, 10 ether); 
-        roulette = new CharacterRouletteTestable(randomnessSender, owner);
+        roulette = new CharacterRouletteTestWrapper(randomnessSender, owner);
     }
 
-    function testRequestCharacterAndFulfill() public {
-        vm.startPrank(player);
+    function testGenerateCharacter() public {
+        // Simulate a request
+        uint256 requestId = 123;
+        roulette.requestCharacterWithDirectFunding{value: 0.001 ether}(player, 200_000);
 
-        (uint256 requestId, ) = roulette.requestCharacterWithDirectFunding{value: 0.1 ether}(
-            player,
-            500000
-        );
+        // Fake randomness
+        bytes32 fakeRandomness = bytes32(uint256(5));
 
-        bytes32 fakeRandomness = keccak256("seed123");
-        vm.prank(randomnessSender);
-        roulette.exposeOnRandomnessReceived(requestId, fakeRandomness);
+        // Call the internal function via the wrapper
+        roulette.testOnRandomnessReceived(requestId, fakeRandomness);
 
+        // Check if the character was added
         string[] memory chars = roulette.getCharacters(player);
-        assertEq(chars.length, 1, "Player should have 1 character");
-
-        emit log_string(chars[0]); 
+        assert(chars.length == 1);
     }
 }
