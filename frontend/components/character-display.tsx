@@ -100,13 +100,6 @@ export function CharacterDisplay({ character, onGenerateAnother, onViewLeaderboa
                         >
                             Generate Another
                         </Button>
-                        <Button
-                            onClick={onViewLeaderboard}
-                            variant="outline"
-                            className="border-border hover:bg-secondary px-6 py-3 bg-transparent"
-                        >
-                            View Leaderboard
-                        </Button>
                     </div>
                 </div>
             </CardContent>

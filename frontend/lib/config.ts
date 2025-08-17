@@ -3,7 +3,7 @@ import { Chain } from "@rainbow-me/rainbowkit"
 
 export const supportedChains: Array<Chain> = [baseSepolia];
 
-export const CONTRACT_ADDRESS = '0x7E00F52E56c4f2ad246b481e4eA67899CA48CE2F';
+export const CONTRACT_ADDRESS = '0x90f100AE6e34F559BA5e99ec542A17D3E914809D';
 
 export const CONTRACT_ABI = [
     {

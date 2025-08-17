@@ -73,7 +73,7 @@ export function WalletConnection({ onViewLeaderboard }: WalletConnectionProps) {
   }
 
   if (viewState === "generate") {
-    return <CharacterGenerator onCharacterGenerated={handleCharacterGenerated} onBack={handleBack} />
+    return <CharacterGenerator />
   }
 
   if (viewState === "display" && generatedCharacter) {

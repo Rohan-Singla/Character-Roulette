@@ -4,10 +4,9 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
-import { useAccount, useWaitForTransactionReceipt, useWriteContract, useReadContract } from "wagmi"
-import { parseEther } from "viem"
+import { useAccount, useWriteContract, useReadContract } from "wagmi"
 import { CONTRACT_ABI, CONTRACT_ADDRESS } from "@/lib/config"
-import { calculateRequestPriceNative, requestRandomness, verifyRandomness } from "@/lib/randomness"
+import { calculateRequestPriceNative } from "@/lib/randomness"
 
 export function CharacterGenerator() {
   const { address, isConnected } = useAccount()
@@ -19,10 +18,6 @@ export function CharacterGenerator() {
   const [vrfResponse, setVrfResponse] = useState<any>(null)
 
   const { writeContractAsync } = useWriteContract()
-  const { isSuccess: txConfirmed } = useWaitForTransactionReceipt({
-    hash: txHash,
-    query: { enabled: !!txHash },
-  })
 
   const { refetch } = useReadContract({
     abi: CONTRACT_ABI,
@@ -52,14 +47,14 @@ export function CharacterGenerator() {
 
         const res = await refetch();
         console.log("📦 Contract response:", res.data)
-        // if (res.data && (res.data as string[]).length > characters.length) {
-        //   console.log("🎉 New character generated:", res.data)
-        //   setCharacters(res.data as string[])
-        //   setStep("Character generated successfully!")
-        //   setProgress(100)
-        //   setIsGenerating(false)
-        //   clearInterval(interval)
-        // }
+        if (res.data && (res.data as string[]).length > characters.length) {
+          console.log("🎉 New character generated:", res.data)
+          setCharacters(res.data as string[])
+          setStep("Character generated successfully!")
+          setProgress(100)
+          setIsGenerating(false)
+          clearInterval(interval)
+        }
       } catch (err) {
         console.error("❌ Error fetching characters:", err)
       }
