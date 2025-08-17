@@ -4,6 +4,11 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
+import { useAccount, useWaitForTransactionReceipt, useWriteContract } from "wagmi"
+import RandomnessABI from "@/lib/abi/Randomness.json" // ABI you compiled with Foundry
+import { parseEther } from "viem"
+
+const RANDOMNESS_CONTRACT = "0xYourRandomnessAddressHere"
 
 interface Character {
   id: string
@@ -30,86 +35,40 @@ export function CharacterGenerator({ onCharacterGenerated, onBack }: CharacterGe
   const [isGenerating, setIsGenerating] = useState(false)
   const [progress, setProgress] = useState(0)
   const [generationStep, setGenerationStep] = useState("")
+  const { data: txHash, writeContract } = useWriteContract()
+  const { address, isConnected } = useAccount();
 
-  const characterClasses = ["Warrior", "Mage", "Rogue", "Paladin", "Archer", "Necromancer"]
-  const characterNames = [
-    "Shadowbane",
-    "Stormcaller",
-    "Ironheart",
-    "Moonwhisper",
-    "Flamestrike",
-    "Frostborn",
-    "Voidwalker",
-    "Lightbringer",
-    "Bloodfang",
-    "Starweaver",
-    "Thornspike",
-    "Mistral",
-  ]
-
-  const generateCharacter = async (): Promise<Character> => {
-    const steps = [
-      "Connecting to blockchain...",
-      "Generating random seed...",
-      "Rolling character class...",
-      "Calculating base stats...",
-      "Determining rarity...",
-      "Finalizing character...",
-    ]
-
-    for (let i = 0; i < steps.length; i++) {
-      setGenerationStep(steps[i])
-      setProgress((i + 1) * (100 / steps.length))
-      await new Promise((resolve) => setTimeout(resolve, 800))
-    }
-
-    // Generate random character
-    const rarity =
-      Math.random() < 0.05 ? "Legendary" : Math.random() < 0.15 ? "Epic" : Math.random() < 0.35 ? "Rare" : "Common"
-
-    const rarityMultiplier = {
-      Common: 1,
-      Rare: 1.2,
-      Epic: 1.5,
-      Legendary: 2,
-    }[rarity]
-
-    const baseStats = {
-      strength: Math.floor((Math.random() * 50 + 50) * rarityMultiplier),
-      agility: Math.floor((Math.random() * 50 + 50) * rarityMultiplier),
-      intelligence: Math.floor((Math.random() * 50 + 50) * rarityMultiplier),
-      vitality: Math.floor((Math.random() * 50 + 50) * rarityMultiplier),
-      luck: Math.floor((Math.random() * 50 + 50) * rarityMultiplier),
-    }
-
-    const totalPower = Object.values(baseStats).reduce((sum, stat) => sum + stat, 0)
-
-    return {
-      id: `char_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      name: characterNames[Math.floor(Math.random() * characterNames.length)],
-      class: characterClasses[Math.floor(Math.random() * characterClasses.length)],
-      rarity,
-      stats: baseStats,
-      totalPower,
-      avatar: `/placeholder.svg?height=200&width=200&query=${rarity.toLowerCase()}+fantasy+character`,
-    }
-  }
+  const { isLoading: waitingTx, isSuccess: txConfirmed } = useWaitForTransactionReceipt({
+    hash: txHash,
+  });
 
   const handleGenerate = async () => {
+    if (!isConnected) {
+      alert("Please connect your wallet first.")
+      return
+    }
+
     setIsGenerating(true)
-    setProgress(0)
+    setProgress(20)
+    setGenerationStep("Sending randomness request...")
 
     try {
-      const character = await generateCharacter()
-      onCharacterGenerated(character)
-    } catch (error) {
-      console.error("Character generation failed:", error)
-    } finally {
+      await writeContract({
+        abi: RandomnessABI,
+        address: RANDOMNESS_CONTRACT,
+        functionName: "requestRandomWords",
+        value: parseEther("0.001"),
+        args: [],
+      })
+
+      setGenerationStep("Waiting for VRF response...")
+      setProgress(50)
+    } catch (err) {
+      console.error(err)
       setIsGenerating(false)
-      setProgress(0)
-      setGenerationStep("")
+      return
     }
-  }
+  };
 
   return (
     <Card className="bg-card border border-border max-w-2xl mx-auto">

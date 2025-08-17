@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import {RandomnessReceiverBase} from "randomness-solidity/src/RandomnessReceiverBase.sol";
+import {RandomnessReceiverBase} from "randomness-solidity/RandomnessReceiverBase.sol";
 
 contract CharacterRoulette is RandomnessReceiverBase {
     mapping(address => string[]) public playerCharacters;

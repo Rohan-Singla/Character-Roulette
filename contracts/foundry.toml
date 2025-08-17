@@ -2,5 +2,15 @@
 src = "src"
 out = "out"
 libs = ["lib"]
-
+remappings = [
+    "randomness-solidity/=lib/randomness-solidity/src/"
+]
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
+
+[rpc_endpoints]
+baseSepolia = "${RPC_URL}"
+
+[profile.default.env]
+PRIVATE_KEY = "${PRIVATE_KEY}"
+RANDOMNESS_SENDER = "${RANDOMNESS_SENDER}"
+RPC_URL = "${RPC_URL}"
