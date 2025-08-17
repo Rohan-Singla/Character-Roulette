@@ -22,50 +22,52 @@ Randomness-Solidity (https://github.com/randa-mu/randomness-solidity) – Provid
 
 Randomness-Js (https://github.com/randa-mu/randomness-js) – Used to request, verify, and derive randomness from the dcipher network, supported by the randomness-solidity contract
 
-Wagmi – React hooks for Ethereum wallet connection and contract interaction.
 
-ViEM – Ethereum JSON-RPC library for transaction and contract calls.
+## Deployed Contract
 
-Next.js – Frontend framework for building a reactive DApp interface.
+**Address:** `0xYourDeployedContractAddressHere`
 
-Tailwind CSS – Styling framework for responsive UI components.
+---
 
-Forge (Foundry) – Smart contract testing and deployment framework.
+## Tools & Tech Stack
 
-Key Features
+- **Wagmi** – React hooks for Ethereum wallet connection and contract interaction  
+- **ViEM** – Ethereum JSON-RPC library for transactions and contract calls  
+- **Next.js** – Frontend framework for building a reactive DApp  
+- **Tailwind CSS** – Responsive UI styling  
+- **Forge (Foundry)** – Smart contract testing and deployment framework  
 
-Random Character Generation: Users can generate characters by sending a transaction; the randomness is handled on-chain.
+---
 
-On-Chain Storage: Generated characters are securely stored in a smart contract per player address.
+## Key Features
 
-Progress Feedback: Users see a live progress bar during character generation.
+- **Random Character Generation:** Users can generate characters via on-chain randomness  
+- **On-Chain Storage:** Characters are stored securely in the contract per player  
+- **Progress Feedback:** Live progress bar during generation  
+- **Debugging Logs:** Logs for transaction submission, confirmation, and character generation  
 
-Debugging Logs: All steps (transaction submission, confirmation, character generation) are logged for easier troubleshooting.
+---
 
-Upcoming Feature
+## Upcoming Feature
 
-Leaderboard: A global leaderboard showing top players based on the number or rarity of characters generated. (Work in progress)
+- **Leaderboard:** Global leaderboard showing top players based on number or rarity of characters (Work in progress)  
 
-How It Works
+---
 
-Player connects wallet to the DApp.
+## How It Works
 
-Player sends a transaction to request a new character.
+1. Player connects wallet to the DApp  
+2. Player sends a transaction to request a new character  
+3. Transaction triggers a randomness request via Randomness SDK  
+4. Smart contract receives randomness and assigns a character  
+5. Character is stored on-chain in `playerCharacters` mapping  
+6. Frontend polls the contract until character generation completes and updates UI  
 
-Transaction triggers a randomness request using Randomness SDK.
+---
 
-The smart contract receives the randomness and assigns a character.
+## Contract Functions
 
-The character is stored on-chain in the player's playerCharacters mapping.
-
-Frontend polls the contract until the character is generated and updates the UI.
-
-Contract Functions
-
-requestCharacterWithDirectFunding(address player, uint32 callbackGasLimit) – Requests a random character by paying in native ETH.
-
-requestCharacterWithSubscription(address player, uint32 callbackGasLimit) – Requests a random character using a subscription model.
-
-onRandomnessReceived(uint256 requestId, bytes32 randomness) – Internal function called by the randomness SDK to assign a character.
-
-getCharacters(address player) – Returns all characters owned by the player.
+- `requestCharacterWithDirectFunding(address player, uint32 callbackGasLimit)` – Request a random character by paying native ETH  
+- `requestCharacterWithSubscription(address player, uint32 callbackGasLimit)` – Request a random character via subscription  
+- `onRandomnessReceived(uint256 requestId, bytes32 randomness)` – Internal function called by randomness SDK to assign character  
+- `getCharacters(address player)` – Returns all characters owned by the player  
