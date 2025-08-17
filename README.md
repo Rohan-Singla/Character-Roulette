@@ -23,9 +23,9 @@ Randomness-Solidity (https://github.com/randa-mu/randomness-solidity) – Provid
 Randomness-Js (https://github.com/randa-mu/randomness-js) – Used to request, verify, and derive randomness from the dcipher network, supported by the randomness-solidity contract
 
 
-## Deployed Contract
+## Deployed Contract on base sepolia network
 
-**Address:** `0xYourDeployedContractAddressHere`
+**Address:** `0x90f100AE6e34F559BA5e99ec542A17D3E914809D`
 
 ---
 
